@@ -17,7 +17,7 @@ export default function pages() {
     getData();
 
     // console.log(data);
-  }, [data]);
+  }, []);
 
   return (
     <View style={styles.container}>
