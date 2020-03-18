@@ -4,14 +4,21 @@ import { StyleSheet, View, Text } from 'react-native';
 import api from '../services/api';
 
 export default function pages() {
-  const [data, setData] = useState();
+  const [totalActiveCases, setTotalActiveCases] = useState(0);
+  const [totalRecovered, setTotalRecovered] = useState(0);
+  const [totalDeaths, setTotalDeaths] = useState(0);
 
   useEffect(() => {
     async function getData() {
 
       const response = await api.get('free-api?countryTotal=BR');
 
-      setData(response.data);
+      if (response.data && response.data.countrydata[0]) {
+        const countrydata = response.data.countrydata[0];
+        setTotalActiveCases(countrydata.total_active_cases);
+        setTotalRecovered(countrydata.total_recovered);
+        setTotalDeaths(countrydata.total_deaths);
+      }
     }
 
     getData();
@@ -24,15 +31,15 @@ export default function pages() {
       <Text style={styles.title}>Corona Virus no Brasil</Text>
       <View style={styles.row}>
         <Text style={styles.subtitle}>Casos:</Text>
-        <Text style={styles.red}>{data.countrydata[0].total_active_cases}</Text>
+        <Text style={styles.red}>{totalActiveCases}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.subtitle}>Recuperados:</Text>
-        <Text style={styles.green}>{data.countrydata[0].total_recovered}</Text>
+        <Text style={styles.green}>{totalRecovered}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.subtitle}>Mortes:</Text>
-        <Text style={styles.purple}>{data.countrydata[0].total_deaths}</Text>
+        <Text style={styles.purple}>{totalDeaths}</Text>
       </View>
     </View>
   );
