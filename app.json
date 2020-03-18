@@ -30,6 +30,9 @@
       "package": "com.mendesg0.coronga",
       "versionCode": 1
     },
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff"
+    },
     "description": "",
     "githubUrl": "https://github.com/gmendes0/coronga"
   }
