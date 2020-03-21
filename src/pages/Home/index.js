@@ -39,19 +39,19 @@ export default function Home() {
   useEffect(() => {
     setRefreshing(true);
 
-    getData().then(() => setRefreshing(false));
+    handleRefresh();
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={{ alignSelf: "stretch" }}
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+      }
+    >
       <Text style={styles.title}>Coronavírus - Brasil</Text>
-      <ScrollView
-        style={{ alignSelf: "stretch" }}
-        contentContainerStyle={styles.scrollview}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      >
+      <View style={styles.scrollview}>
         <View style={styles.card}>
           <Text style={styles.subtitle}>Infectados:</Text>
           <Text style={styles.red}>{totalActiveCases}</Text>
@@ -69,23 +69,21 @@ export default function Home() {
           <Text style={styles.subtitle}>Total de casos:</Text>
           <Text>{total}</Text>
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "#57bac1"
   },
   title: {
     fontSize: 23,
     fontWeight: "bold",
-    paddingVertical: 35,
-    marginTop: 25,
     color: "#fff"
   },
   subtitle: {
@@ -108,9 +106,8 @@ const styles = StyleSheet.create({
     color: "purple"
   },
   scrollview: {
-    justifyContent: "center",
-    alignSelf: "stretch",
-    flex: 1
+    alignItems: "center",
+    alignSelf: "stretch"
   },
   card: {
     borderRadius: 5,
