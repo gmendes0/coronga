@@ -8,20 +8,15 @@ import {
   Alert,
   AsyncStorage
 } from "react-native";
-import { usePersistedState } from "../../hooks";
 
 import api from "../../services/api";
 
 export default function Home() {
-  const [totalActiveCases, setTotalActiveCases] = usePersistedState(
-    "total_active_cases"
-  );
-  const [totalRecovered, setTotalRecovered] = usePersistedState(
-    "total_recovered"
-  );
-  const [totalDeaths, setTotalDeaths] = usePersistedState("total_deaths");
-  const [total, setTotal] = usePersistedState("total_cases");
-  const [refreshing, setRefreshing] = usePersistedState(false);
+  const [totalActiveCases, setTotalActiveCases] = useState(0);
+  const [totalRecovered, setTotalRecovered] = useState(0);
+  const [totalDeaths, setTotalDeaths] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
   async function getData() {
     const response = await api.get("free-api?countryTotal=BR").catch(error => {
@@ -34,8 +29,6 @@ export default function Home() {
       setTotalRecovered(countrydata.total_recovered);
       setTotalDeaths(countrydata.total_deaths);
       setTotal(countrydata.total_cases);
-
-      await AsyncStorage.setItem("coronga", countrydata);
     }
   }
 
@@ -46,10 +39,33 @@ export default function Home() {
   }, [refreshing]);
 
   useEffect(() => {
+    AsyncStorage.getItem("total_active_cases").then(value =>
+      setTotalActiveCases(value)
+    );
+    AsyncStorage.getItem("total_recovered").then(value =>
+      setTotalRecovered(value)
+    );
+    AsyncStorage.getItem("total_deaths").then(value => setTotalDeaths(value));
+    AsyncStorage.getItem("total_cases").then(value => setTotal(value));
+
     setRefreshing(true);
 
     handleRefresh();
   }, []);
+
+  useEffect(() => {
+    async function storeOffline() {
+      await AsyncStorage.setItem(
+        "total_active_cases",
+        totalActiveCases.toString()
+      );
+      await AsyncStorage.setItem("total_recovered", totalRecovered.toString());
+      await AsyncStorage.setItem("total_deaths", totalDeaths.toString());
+      await AsyncStorage.setItem("total_cases", total.toString());
+    }
+
+    storeOffline();
+  }, [totalActiveCases, totalRecovered, totalDeaths, total]);
 
   return (
     <ScrollView
