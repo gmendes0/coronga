@@ -5,17 +5,23 @@ import {
   RefreshControl,
   View,
   Text,
-  Alert
+  Alert,
+  AsyncStorage
 } from "react-native";
+import { usePersistedState } from "../../hooks";
 
 import api from "../../services/api";
 
 export default function Home() {
-  const [totalActiveCases, setTotalActiveCases] = useState(0);
-  const [totalRecovered, setTotalRecovered] = useState(0);
-  const [totalDeaths, setTotalDeaths] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [refreshing, setRefreshing] = useState(false);
+  const [totalActiveCases, setTotalActiveCases] = usePersistedState(
+    "total_active_cases"
+  );
+  const [totalRecovered, setTotalRecovered] = usePersistedState(
+    "total_recovered"
+  );
+  const [totalDeaths, setTotalDeaths] = usePersistedState("total_deaths");
+  const [total, setTotal] = usePersistedState("total_cases");
+  const [refreshing, setRefreshing] = usePersistedState(false);
 
   async function getData() {
     const response = await api.get("free-api?countryTotal=BR").catch(error => {
@@ -27,6 +33,9 @@ export default function Home() {
       setTotalActiveCases(countrydata.total_active_cases);
       setTotalRecovered(countrydata.total_recovered);
       setTotalDeaths(countrydata.total_deaths);
+      setTotal(countrydata.total_cases);
+
+      await AsyncStorage.setItem("coronga", countrydata);
     }
   }
 
